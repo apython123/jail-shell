@@ -120,6 +120,7 @@ sudo jail-shell user -a test -j test-jail
 ```shell
 ssh test@127.0.0.1
 ```
+![Example](https://github.com/pymumu/backup/raw/master/image/example.gif)
 
 配置文件格式说明
 -------------
