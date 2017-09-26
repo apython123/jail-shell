@@ -68,6 +68,8 @@ struct cap_drop_struct {
 	int isdrop;
 };
 
+int setns(int fd, int nstype) __attribute__((weak));
+
 /*  for cap details, please read (man capabilities) */
 struct cap_drop_struct cap_drop[] = 
 {
@@ -515,17 +517,17 @@ int create_jail_ns(struct user_jail_struct *info, char *user, char *pid_file, ch
 	int fd = -1;
 	char buff[TMP_BUFF_LEN_32];
 
-#ifdef __NR_setns
-	if (info->namespace_flag == 0) {
+	if (setns) {
+		if (info->namespace_flag == 0) {
+			return do_mount(info, user, chroot_path);
+		}
+		if (unshare(info->namespace_flag) != 0) {
+			return -1;
+		}
+	} else {
+		/*  NOT support */
 		return do_mount(info, user, chroot_path);
 	}
-	if (unshare(info->namespace_flag) != 0) {
-		return -1;
-	}
-#else
-	/*  NOT support */
-	return do_mount(info, user, chroot_path);
-#endif
 
 	pid = fork();
 	if (pid < 0) {
